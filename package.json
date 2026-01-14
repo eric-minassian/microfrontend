@@ -1,0 +1,22 @@
+{
+  "name": "microfrontend-poc",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter shell --filter mfe1 --filter mfe2 --parallel dev",
+    "dev:shell": "pnpm --filter shell dev",
+    "dev:mfe1": "pnpm --filter mfe1 dev",
+    "dev:mfe2": "pnpm --filter mfe2 dev",
+    "build": "pnpm --filter mfe1 build && pnpm --filter mfe2 build && pnpm --filter shell build",
+    "build:shell": "pnpm --filter shell build",
+    "build:mfe1": "pnpm --filter mfe1 build",
+    "build:mfe2": "pnpm --filter mfe2 build",
+    "preview": "pnpm --filter shell --filter mfe1 --filter mfe2 --parallel preview",
+    "preview:shell": "pnpm --filter shell preview",
+    "preview:mfe1": "pnpm --filter mfe1 preview",
+    "preview:mfe2": "pnpm --filter mfe2 preview",
+    "deploy:aws": "pnpm run build && pnpm --filter infra run deploy",
+    "destroy:aws": "pnpm --filter infra run destroy",
+    "cdk:synth": "pnpm --filter infra run synth"
+  }
+}
