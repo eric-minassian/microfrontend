@@ -28,9 +28,9 @@ export type { MfeConfig, MfeViteConfig, ShellConfig, SharedConfig }
  * These are configured as singletons to ensure consistency across MFEs
  */
 const DEFAULT_SHARED: Record<string, SharedConfig> = {
-  react: { singleton: true },
-  'react-dom': { singleton: true },
-  'react-router-dom': { singleton: true },
+  react: { singleton: true, eager: true },
+  'react-dom': { singleton: true, eager: true },
+  'react-router-dom': { singleton: true, eager: true },
   '@cloudscape-design/components': { singleton: true },
   '@cloudscape-design/global-styles': { singleton: true },
 }
@@ -169,6 +169,15 @@ export function createShellConfig(options: ShellConfig): UserConfig {
       target: 'chrome89',
       minify: true,
       cssCodeSplit: false,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // Split heavy Cloudscape components for better caching
+            'cloudscape-core': ['@cloudscape-design/components'],
+            'cloudscape-styles': ['@cloudscape-design/global-styles'],
+          },
+        },
+      },
     },
     plugins: [
       federation({
