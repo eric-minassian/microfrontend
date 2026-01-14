@@ -1,57 +1,105 @@
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import {
+  ContentLayout,
+  Header,
+  Table,
+  Box,
+  SpaceBetween,
+  Button,
+  Badge,
+  StatusIndicator,
+} from '@cloudscape-design/components'
 
 const users = [
-  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin' },
-  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Editor' },
-  { id: 3, name: 'Carol White', email: 'carol@example.com', role: 'Viewer' },
-  { id: 4, name: 'David Brown', email: 'david@example.com', role: 'Editor' },
+  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin', status: 'Active' },
+  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Editor', status: 'Active' },
+  { id: 3, name: 'Carol White', email: 'carol@example.com', role: 'Viewer', status: 'Inactive' },
+  { id: 4, name: 'David Brown', email: 'david@example.com', role: 'Editor', status: 'Active' },
+  { id: 5, name: 'Eve Wilson', email: 'eve@example.com', role: 'Viewer', status: 'Active' },
 ]
 
 export default function Users({ basePath = '' }: { basePath?: string }) {
-  return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h2 style={{ marginTop: 0, color: '#42b883' }}>Users</h2>
-        <Link
-          to={basePath || '/mfe2'}
-          style={{ color: '#42b883', textDecoration: 'none' }}
-        >
-          &larr; Back
-        </Link>
-      </div>
+  const navigate = useNavigate()
 
-      <table style={{
-        width: '100%',
-        marginTop: '20px',
-        borderCollapse: 'collapse',
-      }}>
-        <thead>
-          <tr style={{ borderBottom: '1px solid #333' }}>
-            <th style={{ textAlign: 'left', padding: '12px', color: '#888' }}>Name</th>
-            <th style={{ textAlign: 'left', padding: '12px', color: '#888' }}>Email</th>
-            <th style={{ textAlign: 'left', padding: '12px', color: '#888' }}>Role</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(user => (
-            <tr key={user.id} style={{ borderBottom: '1px solid #222' }}>
-              <td style={{ padding: '12px' }}>{user.name}</td>
-              <td style={{ padding: '12px', color: '#888' }}>{user.email}</td>
-              <td style={{ padding: '12px' }}>
-                <span style={{
-                  backgroundColor: '#42b88333',
-                  color: '#42b883',
-                  padding: '4px 12px',
-                  borderRadius: '12px',
-                  fontSize: '14px',
-                }}>
-                  {user.role}
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+  return (
+    <ContentLayout
+      header={
+        <Header
+          variant="h1"
+          actions={
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button onClick={() => navigate(basePath || '/mfe2')}>
+                Back
+              </Button>
+              <Button variant="primary">Add User</Button>
+            </SpaceBetween>
+          }
+        >
+          Users
+        </Header>
+      }
+    >
+      <Table
+        columnDefinitions={[
+          {
+            id: 'name',
+            header: 'Name',
+            cell: item => item.name,
+            sortingField: 'name',
+          },
+          {
+            id: 'email',
+            header: 'Email',
+            cell: item => item.email,
+          },
+          {
+            id: 'role',
+            header: 'Role',
+            cell: item => (
+              <Badge
+                color={
+                  item.role === 'Admin'
+                    ? 'red'
+                    : item.role === 'Editor'
+                    ? 'blue'
+                    : 'grey'
+                }
+              >
+                {item.role}
+              </Badge>
+            ),
+          },
+          {
+            id: 'status',
+            header: 'Status',
+            cell: item => (
+              <StatusIndicator type={item.status === 'Active' ? 'success' : 'stopped'}>
+                {item.status}
+              </StatusIndicator>
+            ),
+          },
+        ]}
+        items={users}
+        sortingDisabled
+        variant="full-page"
+        stickyHeader
+        empty={
+          <Box textAlign="center" color="inherit">
+            <b>No users</b>
+            <Box padding={{ bottom: 's' }} variant="p" color="inherit">
+              No users to display.
+            </Box>
+            <Button>Add user</Button>
+          </Box>
+        }
+        header={
+          <Header
+            counter={`(${users.length})`}
+          >
+            All Users
+          </Header>
+        }
+      />
+    </ContentLayout>
   )
 }

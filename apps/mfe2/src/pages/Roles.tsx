@@ -1,56 +1,75 @@
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import {
+  ContentLayout,
+  Header,
+  Container,
+  Box,
+  SpaceBetween,
+  Button,
+  Badge,
+  ColumnLayout,
+} from '@cloudscape-design/components'
 
 const roles = [
-  { id: 1, name: 'Admin', permissions: ['read', 'write', 'delete', 'manage'] },
-  { id: 2, name: 'Editor', permissions: ['read', 'write'] },
-  { id: 3, name: 'Viewer', permissions: ['read'] },
+  { id: 1, name: 'Admin', description: 'Full system access', permissions: ['read', 'write', 'delete', 'manage'] },
+  { id: 2, name: 'Editor', description: 'Can edit content', permissions: ['read', 'write'] },
+  { id: 3, name: 'Viewer', description: 'Read-only access', permissions: ['read'] },
 ]
 
 export default function Roles({ basePath = '' }: { basePath?: string }) {
-  return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h2 style={{ marginTop: 0, color: '#42b883' }}>Roles</h2>
-        <Link
-          to={basePath || '/mfe2'}
-          style={{ color: '#42b883', textDecoration: 'none' }}
-        >
-          &larr; Back
-        </Link>
-      </div>
+  const navigate = useNavigate()
 
-      <div style={{ marginTop: '20px' }}>
+  return (
+    <ContentLayout
+      header={
+        <Header
+          variant="h1"
+          actions={
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button onClick={() => navigate(basePath || '/mfe2')}>
+                Back
+              </Button>
+              <Button variant="primary">Add Role</Button>
+            </SpaceBetween>
+          }
+        >
+          Roles
+        </Header>
+      }
+    >
+      <SpaceBetween size="l">
         {roles.map(role => (
-          <div
+          <Container
             key={role.id}
-            style={{
-              backgroundColor: '#1a1a2e',
-              padding: '16px',
-              borderRadius: '8px',
-              border: '1px solid #333',
-              marginBottom: '12px',
-            }}
+            header={
+              <Header
+                variant="h2"
+                description={role.description}
+                actions={
+                  <Button iconName="edit">Edit</Button>
+                }
+              >
+                {role.name}
+              </Header>
+            }
           >
-            <h3 style={{ margin: '0 0 12px 0', color: '#42b883' }}>{role.name}</h3>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              {role.permissions.map(permission => (
-                <span
-                  key={permission}
-                  style={{
-                    backgroundColor: '#333',
-                    padding: '4px 12px',
-                    borderRadius: '4px',
-                    fontSize: '14px',
-                    color: '#fff',
-                  }}
-                >
-                  {permission}
-                </span>
-              ))}
-            </div>
-          </div>
+            <ColumnLayout columns={1}>
+              <div>
+                <Box variant="awsui-key-label">Permissions</Box>
+                <Box padding={{ top: 'xs' }}>
+                  <SpaceBetween direction="horizontal" size="xs">
+                    {role.permissions.map(permission => (
+                      <Badge key={permission} color="blue">
+                        {permission}
+                      </Badge>
+                    ))}
+                  </SpaceBetween>
+                </Box>
+              </div>
+            </ColumnLayout>
+          </Container>
         ))}
-      </div>
-    </div>
+      </SpaceBetween>
+    </ContentLayout>
   )
 }

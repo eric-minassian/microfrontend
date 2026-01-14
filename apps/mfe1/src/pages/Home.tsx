@@ -1,58 +1,80 @@
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import {
+  ContentLayout,
+  Header,
+  Container,
+  SpaceBetween,
+  Button,
+  Alert,
+  ColumnLayout,
+  Box,
+} from '@cloudscape-design/components'
 import { useUser } from 'shell/useUser'
 
 export default function Home({ basePath = '' }: { basePath?: string }) {
   const { user, isAuthenticated } = useUser()
+  const navigate = useNavigate()
 
   return (
-    <div>
-      <h2 style={{ marginTop: 0, color: '#646cff' }}>Product Catalog</h2>
-      <p>Welcome to MFE1 - Product Catalog Module</p>
-
-      {isAuthenticated && user && (
-        <div style={{
-          backgroundColor: '#1a1a2e',
-          padding: '16px',
-          borderRadius: '8px',
-          marginBottom: '20px',
-          border: '1px solid #646cff33',
-        }}>
-          <p style={{ margin: 0, fontSize: '14px', color: '#888' }}>
-            Logged in as <strong style={{ color: '#fff' }}>{user.name}</strong> ({user.role})
-          </p>
-          <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: '#666' }}>
-            User context provided by Shell via Module Federation
-          </p>
-        </div>
-      )}
-
-      <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
-        <Link
-          to={`${basePath}/products`}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: '#646cff',
-            color: '#fff',
-            borderRadius: '6px',
-            textDecoration: 'none',
-          }}
+    <ContentLayout
+      header={
+        <Header
+          variant="h1"
+          description="Browse and manage your product inventory"
         >
-          View Products
-        </Link>
-        <Link
-          to={`${basePath}/categories`}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: 'transparent',
-            color: '#646cff',
-            border: '1px solid #646cff',
-            borderRadius: '6px',
-            textDecoration: 'none',
-          }}
+          Product Catalog
+        </Header>
+      }
+    >
+      <SpaceBetween size="l">
+        {isAuthenticated && user && (
+          <Alert
+            type="info"
+            header={`Welcome, ${user.name}`}
+          >
+            You are logged in as <strong>{user.role}</strong>. User context is
+            provided by the Shell via Module Federation.
+          </Alert>
+        )}
+
+        <Container
+          header={
+            <Header
+              variant="h2"
+              description="Quick access to catalog features"
+            >
+              Quick Actions
+            </Header>
+          }
         >
-          Categories
-        </Link>
-      </div>
-    </div>
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="awsui-key-label">Products</Box>
+              <Box variant="p" padding={{ bottom: 's' }}>
+                View and manage your product inventory
+              </Box>
+              <Button
+                variant="primary"
+                onClick={() => navigate(`${basePath}/products`)}
+              >
+                View Products
+              </Button>
+            </div>
+            <div>
+              <Box variant="awsui-key-label">Categories</Box>
+              <Box variant="p" padding={{ bottom: 's' }}>
+                Organize products into categories
+              </Box>
+              <Button
+                variant="normal"
+                onClick={() => navigate(`${basePath}/categories`)}
+              >
+                View Categories
+              </Button>
+            </div>
+          </ColumnLayout>
+        </Container>
+      </SpaceBetween>
+    </ContentLayout>
   )
 }

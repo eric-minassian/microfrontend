@@ -8,7 +8,15 @@
 
 import { lazy, Suspense } from 'react'
 import { Route } from 'react-router-dom'
-import { ErrorBoundary, LoadingSpinner } from '@mfe-platform/core/react'
+import {
+  Box,
+  Button,
+  Container,
+  Header,
+  Spinner,
+  StatusIndicator,
+} from '@cloudscape-design/components'
+import { ErrorBoundary } from '@mfe-platform/core/react'
 import type { MfeConfig } from '@mfe-platform/core/types'
 import { mfeList } from '../mfe-registry'
 
@@ -44,6 +52,56 @@ function getMfeComponent(mfeName: string) {
 }
 
 /**
+ * Loading spinner component for MFE loading states
+ */
+function MfeLoadingSpinner({ name }: { name: string }) {
+  return (
+    <Container>
+      <Box textAlign="center" padding="xxl">
+        <Spinner size="large" />
+        <Box variant="p" padding={{ top: 's' }}>
+          Loading {name}...
+        </Box>
+      </Box>
+    </Container>
+  )
+}
+
+/**
+ * Error fallback component for MFE errors
+ */
+function MfeErrorFallback({
+  mfeName,
+  error,
+  retry,
+}: {
+  mfeName: string
+  error: Error
+  retry: () => void
+}) {
+  return (
+    <Container
+      header={
+        <Header variant="h2">
+          <StatusIndicator type="error">
+            Failed to load {mfeName}
+          </StatusIndicator>
+        </Header>
+      }
+    >
+      <Box padding="l">
+        <Box variant="p" color="text-status-error" padding={{ bottom: 'm' }}>
+          {error.message}
+        </Box>
+        <Button onClick={retry} iconName="refresh">
+          Retry
+        </Button>
+      </Box>
+    </Container>
+  )
+}
+
+/**
  * Props for individual MFE wrapper
  */
 interface MfeWrapperProps {
@@ -59,28 +117,10 @@ function MfeWrapper({ mfe }: MfeWrapperProps) {
   return (
     <ErrorBoundary
       fallback={({ error, retry }) => (
-        <div style={{ padding: '2rem', textAlign: 'center' }}>
-          <h3 style={{ color: '#dc2626', marginBottom: '1rem' }}>
-            Failed to load {mfe.displayName}
-          </h3>
-          <p style={{ color: '#666', marginBottom: '1rem' }}>{error.message}</p>
-          <button
-            onClick={retry}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#3b82f6',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
-          >
-            Retry
-          </button>
-        </div>
+        <MfeErrorFallback mfeName={mfe.displayName} error={error} retry={retry} />
       )}
     >
-      <Suspense fallback={<LoadingSpinner name={mfe.displayName} />}>
+      <Suspense fallback={<MfeLoadingSpinner name={mfe.displayName} />}>
         <MfeComponent basePath={mfe.routePath} />
       </Suspense>
     </ErrorBoundary>

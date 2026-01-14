@@ -1,51 +1,102 @@
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import {
+  ContentLayout,
+  Header,
+  Table,
+  Box,
+  SpaceBetween,
+  Button,
+  Badge,
+} from '@cloudscape-design/components'
 
 const products = [
-  { id: 1, name: 'Laptop Pro', price: 1299, category: 'Electronics' },
-  { id: 2, name: 'Wireless Mouse', price: 49, category: 'Electronics' },
-  { id: 3, name: 'Standing Desk', price: 599, category: 'Furniture' },
-  { id: 4, name: 'Monitor 27"', price: 399, category: 'Electronics' },
+  { id: 1, name: 'Laptop Pro', price: 1299, category: 'Electronics', status: 'In Stock' },
+  { id: 2, name: 'Wireless Mouse', price: 49, category: 'Electronics', status: 'In Stock' },
+  { id: 3, name: 'Standing Desk', price: 599, category: 'Furniture', status: 'Low Stock' },
+  { id: 4, name: 'Monitor 27"', price: 399, category: 'Electronics', status: 'In Stock' },
+  { id: 5, name: 'Ergonomic Chair', price: 449, category: 'Furniture', status: 'Out of Stock' },
 ]
 
 export default function Products({ basePath = '' }: { basePath?: string }) {
-  return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h2 style={{ marginTop: 0, color: '#646cff' }}>Products</h2>
-        <Link
-          to={basePath || '/mfe1'}
-          style={{ color: '#646cff', textDecoration: 'none' }}
-        >
-          &larr; Back
-        </Link>
-      </div>
+  const navigate = useNavigate()
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-        gap: '16px',
-        marginTop: '20px',
-      }}>
-        {products.map(product => (
-          <div
-            key={product.id}
-            style={{
-              backgroundColor: '#1a1a2e',
-              padding: '16px',
-              borderRadius: '8px',
-              border: '1px solid #333',
-            }}
+  return (
+    <ContentLayout
+      header={
+        <Header
+          variant="h1"
+          actions={
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button onClick={() => navigate(basePath || '/mfe1')}>
+                Back
+              </Button>
+              <Button variant="primary">Add Product</Button>
+            </SpaceBetween>
+          }
+        >
+          Products
+        </Header>
+      }
+    >
+      <Table
+        columnDefinitions={[
+          {
+            id: 'name',
+            header: 'Name',
+            cell: item => item.name,
+            sortingField: 'name',
+          },
+          {
+            id: 'category',
+            header: 'Category',
+            cell: item => item.category,
+            sortingField: 'category',
+          },
+          {
+            id: 'price',
+            header: 'Price',
+            cell: item => `$${item.price.toLocaleString()}`,
+            sortingField: 'price',
+          },
+          {
+            id: 'status',
+            header: 'Status',
+            cell: item => (
+              <Badge
+                color={
+                  item.status === 'In Stock'
+                    ? 'green'
+                    : item.status === 'Low Stock'
+                    ? 'blue'
+                    : 'red'
+                }
+              >
+                {item.status}
+              </Badge>
+            ),
+          },
+        ]}
+        items={products}
+        sortingDisabled
+        variant="full-page"
+        stickyHeader
+        empty={
+          <Box textAlign="center" color="inherit">
+            <b>No products</b>
+            <Box padding={{ bottom: 's' }} variant="p" color="inherit">
+              No products to display.
+            </Box>
+            <Button>Add product</Button>
+          </Box>
+        }
+        header={
+          <Header
+            counter={`(${products.length})`}
           >
-            <h3 style={{ margin: '0 0 8px 0', fontSize: '16px' }}>{product.name}</h3>
-            <p style={{ margin: '0 0 8px 0', color: '#888', fontSize: '14px' }}>
-              {product.category}
-            </p>
-            <p style={{ margin: 0, color: '#646cff', fontWeight: 'bold' }}>
-              ${product.price}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div>
+            All Products
+          </Header>
+        }
+      />
+    </ContentLayout>
   )
 }

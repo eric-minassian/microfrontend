@@ -1,63 +1,83 @@
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import {
+  ContentLayout,
+  Header,
+  Container,
+  SpaceBetween,
+  Button,
+  Alert,
+  ColumnLayout,
+  Box,
+} from '@cloudscape-design/components'
 import { useUser } from 'shell/useUser'
 
 export default function Home({ basePath = '' }: { basePath?: string }) {
   const { user, isAuthenticated } = useUser()
+  const navigate = useNavigate()
 
   return (
-    <div>
-      <h2 style={{ marginTop: 0, color: '#42b883' }}>User Management</h2>
-      <p>Welcome to MFE2 - User Management Module</p>
-
-      {isAuthenticated && user && (
-        <div style={{
-          backgroundColor: '#1a1a2e',
-          padding: '16px',
-          borderRadius: '8px',
-          marginBottom: '20px',
-          border: '1px solid #42b88333',
-        }}>
-          <p style={{ margin: 0, fontSize: '14px', color: '#888' }}>
-            Logged in as <strong style={{ color: '#fff' }}>{user.name}</strong> ({user.role})
-          </p>
-          <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: '#666' }}>
-            User context provided by Shell via Module Federation
-          </p>
-          {user.role === 'admin' && (
-            <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: '#42b883' }}>
-              You have admin access to manage users
-            </p>
-          )}
-        </div>
-      )}
-
-      <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
-        <Link
-          to={`${basePath}/users`}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: '#42b883',
-            color: '#fff',
-            borderRadius: '6px',
-            textDecoration: 'none',
-          }}
+    <ContentLayout
+      header={
+        <Header
+          variant="h1"
+          description="Manage users, roles, and permissions"
         >
-          View Users
-        </Link>
-        <Link
-          to={`${basePath}/roles`}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: 'transparent',
-            color: '#42b883',
-            border: '1px solid #42b883',
-            borderRadius: '6px',
-            textDecoration: 'none',
-          }}
+          User Management
+        </Header>
+      }
+    >
+      <SpaceBetween size="l">
+        {isAuthenticated && user && (
+          <Alert
+            type={user.role === 'admin' ? 'success' : 'info'}
+            header={`Welcome, ${user.name}`}
+          >
+            You are logged in as <strong>{user.role}</strong>.
+            {user.role === 'admin' && ' You have full administrative access to manage users.'}
+            <Box variant="small" color="text-body-secondary" padding={{ top: 'xs' }}>
+              User context provided by Shell via Module Federation.
+            </Box>
+          </Alert>
+        )}
+
+        <Container
+          header={
+            <Header
+              variant="h2"
+              description="Quick access to user management features"
+            >
+              Quick Actions
+            </Header>
+          }
         >
-          Roles
-        </Link>
-      </div>
-    </div>
+          <ColumnLayout columns={2} variant="text-grid">
+            <div>
+              <Box variant="awsui-key-label">Users</Box>
+              <Box variant="p" padding={{ bottom: 's' }}>
+                View and manage user accounts
+              </Box>
+              <Button
+                variant="primary"
+                onClick={() => navigate(`${basePath}/users`)}
+              >
+                View Users
+              </Button>
+            </div>
+            <div>
+              <Box variant="awsui-key-label">Roles</Box>
+              <Box variant="p" padding={{ bottom: 's' }}>
+                Configure roles and permissions
+              </Box>
+              <Button
+                variant="normal"
+                onClick={() => navigate(`${basePath}/roles`)}
+              >
+                View Roles
+              </Button>
+            </div>
+          </ColumnLayout>
+        </Container>
+      </SpaceBetween>
+    </ContentLayout>
   )
 }

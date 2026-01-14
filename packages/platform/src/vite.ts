@@ -31,6 +31,8 @@ const DEFAULT_SHARED: Record<string, SharedConfig> = {
   react: { singleton: true },
   'react-dom': { singleton: true },
   'react-router-dom': { singleton: true },
+  '@cloudscape-design/components': { singleton: true },
+  '@cloudscape-design/global-styles': { singleton: true },
 }
 
 /**
