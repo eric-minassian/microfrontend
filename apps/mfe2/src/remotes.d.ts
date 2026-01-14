@@ -1,19 +1,11 @@
+/**
+ * Type declarations for shell modules consumed by this MFE
+ *
+ * These declarations provide TypeScript support for shared modules
+ * exposed by the shell via Module Federation.
+ */
+
 declare module 'shell/useUser' {
-  export interface User {
-    id: string
-    name: string
-    email: string
-    role: 'admin' | 'editor' | 'viewer'
-    avatar?: string
-  }
-
-  export interface UserContextValue {
-    user: User | null
-    isAuthenticated: boolean
-    login: (user: User) => void
-    logout: () => void
-    updateUser: (updates: Partial<User>) => void
-  }
-
+  import type { UserContextValue } from '@mfe-platform/core/types'
   export function useUser(): UserContextValue
 }

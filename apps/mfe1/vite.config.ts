@@ -1,45 +1,18 @@
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig, mergeConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { federation } from '@module-federation/vite'
+import { createMfeConfig } from '@mfe-platform/core/vite'
+import { mfe } from './mfe.config'
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
-  const isProd = mode === 'production'
+  process.env.NODE_ENV = mode
 
-  const shellUrl = isProd ? (env.VITE_SHELL_URL || '') : 'http://localhost:3000'
+  const mfeConfig = createMfeConfig({ mfe })
 
-  return {
+  return mergeConfig(mfeConfig, {
+    plugins: [react()],
     server: {
-      port: 3001,
-      origin: 'http://localhost:3001',
+      origin: `http://localhost:${mfe.devPort}`,
     },
-    base: isProd ? '/mfe1/' : 'http://localhost:3001',
-    plugins: [
-      react(),
-      federation({
-        name: 'mfe1',
-        filename: 'remoteEntry.js',
-        manifest: true,
-        exposes: {
-          './App': './src/App.tsx',
-        },
-        remotes: {
-          shell: {
-            type: 'module',
-            name: 'shell',
-            entry: `${shellUrl}/mf-manifest.json`,
-            entryGlobalName: 'shell',
-          },
-        },
-        shared: {
-          react: { singleton: true },
-          'react-dom': { singleton: true },
-          'react-router-dom': { singleton: true },
-        },
-      }),
-    ],
-    build: {
-      target: 'chrome89',
-    },
-  }
+    base: mode === 'production' ? `${mfe.routePath}/` : `http://localhost:${mfe.devPort}`,
+  })
 })
